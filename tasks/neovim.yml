@@ -12,7 +12,7 @@
 
 - name: Download nvim
   get_url:
-    url: https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+    url: https://github.com/neovim/neovim/archive/refs/tags/v0.10.0.tar.gz
     dest: /tmp/nvim-linux64.tar.gz
 
 - name: Remove existing nvim directory
