@@ -1,0 +1,10 @@
+- name: Install Packages
+  apt: name={{item}}
+  with_items:
+    - neovim
+    - git
+    - ripgrep
+    - unzip
+    - neofetch
+    - wget
+
