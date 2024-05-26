@@ -1,0 +1,42 @@
+- name: Install necessary packages
+  apt:
+    name:
+      - make
+      - gcc
+      - ripgrep
+      - unzip
+      - git
+      - xclip
+      - curl
+    state: present
+
+- name: Download nvim
+  get_url:
+    url: https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+    dest: /tmp/nvim-linux64.tar.gz
+
+- name: Remove existing nvim directory
+  file:
+    path: /opt/nvim-linux64
+    state: absent
+    force: yes
+
+- name: Create nvim directory
+  file:
+    path: /opt/nvim-linux64
+    state: directory
+    mode: '0755'
+
+- name: Extract nvim tarball
+  unarchive:
+    src: /tmp/nvim-linux64.tar.gz
+    dest: /opt
+    remote_src: yes
+
+- name: Create symbolic link for nvim
+  file:
+    src: /opt/nvim-linux64/bin/nvim
+    dest: /usr/local/bin/nvim
+    state: link
+    force: yes
+
