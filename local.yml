@@ -1,5 +1,7 @@
 - hosts: localhost
   become: true
+  vars:
+    neovim_version: "0.10.0"
   pre_tasks:
     - name: Update Repositories
       apt: update_cache=yes
@@ -10,3 +12,4 @@
     - include_tasks: tasks/users.yml
     - include_tasks: tasks/cron.yml
     - include_tasks: tasks/neovim.yml
+    - include_tasks: tasks/docker.yml

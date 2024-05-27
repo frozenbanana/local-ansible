@@ -1,3 +1,16 @@
+- name: Check installed Neovim version
+  command: nvim --version
+  register: neovim_installed_version
+  ignore_errors: yes
+
+- name: Set installed Neovim version fact
+  set_fact:
+    installed_neovim_version: "{{ neovim_installed_version.stdout.split()[1] | replace('v', '') }}"
+  when: neovim_installed_version.rc == 0
+
+- name: debug vars
+  debug:
+    msg: "This is message {{ neovim_version }} and this is {{ installed_neovim_version }}"
 - name: Install necessary packages
   apt:
     name:
@@ -9,38 +22,40 @@
       - xclip
       - curl
     state: present
-
-- name: Download nvim
-  get_url:
-    url: https://github.com/neovim/neovim/releases/download/v0.10.0/nvim-linux64.tar.gz
-    dest: /tmp/nvim-linux64.tar.gz
+  when: installed_neovim_version is not defined or installed_neovim_version != neovim_version
 
 - name: Remove existing nvim directory
   file:
-    path: /opt/nvim-linux64
+    path: /opt/nvim
     state: absent
     force: yes
+  when: installed_neovim_version is not defined or installed_neovim_version != neovim_version
 
 - name: Create nvim directory
   file:
-    path: /opt/nvim-linux64
+    path: /opt/nvim
     state: directory
     mode: '0755'
+  when: installed_neovim_version is not defined or installed_neovim_version != neovim_version
 
 - name: Extract nvim tarball
   unarchive:
-    src: /tmp/nvim-linux64.tar.gz
-    dest: /opt
+    src: "https://github.com/neovim/neovim/releases/download/v{{ neovim_version }}/nvim-linux64.tar.gz"
+    dest: /opt/nvim
     remote_src: yes
+  when: installed_neovim_version is not defined or installed_neovim_version != neovim_version
 
 - name: Create symbolic link for nvim
   file:
-    src: /opt/nvim-linux64/bin/nvim
-    dest: /usr/local/bin/nvim
+    src: /opt/nvim/nvim-linux64/bin/nvim
+    dest: /home/henry/.local/bin/nvim
     state: link
     force: yes
+  when: installed_neovim_version is not defined or installed_neovim_version != neovim_version
 
 - name: Clone kickstart repo
   git:
-    repo: 'https://github.com/frozenbanana/kickstart.nvim.git'    
+    repo: 'https://github.com/frozenbanana/kickstart.nvim.git'
     dest: /home/henry/.config/nvim
+  when: installed_neovim_version is not defined or installed_neovim_version != neovim_version
+
