@@ -1,6 +1,7 @@
 - name: Install Packages
   apt: name={{item}}
   with_items:
+    - htop
     - git
     - ripgrep
     - unzip
@@ -28,6 +29,7 @@
       - org.gimp.GIMP
       - com.github.IsmaelMartinez.teams_for_linux
       - com.visualstudio.code
+      - com.bitwarden.desktop
 
 - name: Ensure /tmp/deb_packages directory exists
   file:
@@ -53,7 +55,4 @@
     state: absent
   with_items:
     - { name: 'ChatGPT_1.1.0_linux_x86_64.deb', url: 'https://github.com/lencx/ChatGPT/releases/download/v1.1.0/ChatGPT_1.1.0_linux_x86_64.deb' }
-  
-- name: Install Deb packages
-  apt:
-    deb: 
+
