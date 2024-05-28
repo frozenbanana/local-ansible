@@ -19,6 +19,8 @@
     - gpaste-2
     - flatpak
     - gnome-software-plugin-flatpak
+    - kitty
+    - ranger
 
 - name: Add flatpak repo
   command: flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
@@ -30,6 +32,8 @@
       - com.github.IsmaelMartinez.teams_for_linux
       - com.visualstudio.code
       - com.bitwarden.desktop
+      - com.obsproject.Studio
+      - com.spotify.Client
 
 - name: Ensure /tmp/deb_packages directory exists
   file:

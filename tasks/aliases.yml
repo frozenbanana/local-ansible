@@ -1,0 +1,20 @@
+- name: Ensure the .bashrc file exists
+  file:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    state: touch
+    mode: '0644'
+
+- name: Add aliases to .bashrc
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    state: present
+    line: "{{ item }}"
+  with_items:
+    - 'alias ll="ls -la"'
+    - 'alias icat="kitty +kitten icat"'
+    - 'alias vim="nvim"'
+
+- name: Source .bashrc to apply changes
+  shell: source {{ ansible_env.HOME }}/.bashrc
+  args:
+    executable: /bin/bash
