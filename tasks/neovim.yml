@@ -8,9 +8,6 @@
     installed_neovim_version: "{{ neovim_installed_version.stdout.split()[1] | replace('v', '') }}"
   when: neovim_installed_version.rc == 0
 
-- name: debug vars
-  debug:
-    msg: "This is message {{ neovim_version }} and this is {{ installed_neovim_version }}"
 - name: Install necessary packages
   apt:
     name:

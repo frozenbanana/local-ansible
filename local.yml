@@ -2,6 +2,7 @@
   become: true
   vars:
     neovim_version: "0.10.0"
+    user_home: "/home/henry/"
   pre_tasks:
     - name: Update Repositories
       apt: update_cache=yes
