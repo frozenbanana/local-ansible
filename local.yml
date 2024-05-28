@@ -10,9 +10,22 @@
 
   tasks:
     - include_tasks: tasks/packages.yml
+      tags: packages
+
     - include_tasks: tasks/aliases.yml
+      tags: aliases
+
     - include_tasks: tasks/locale.yml
+      tags: locale
+
     - include_tasks: tasks/users.yml
+      tags: users
+
     - include_tasks: tasks/cron.yml
+      tags: cron
+
     - include_tasks: tasks/neovim.yml
+      tags: neovim
+
     - include_tasks: tasks/docker.yml
+      tags: docker

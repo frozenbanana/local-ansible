@@ -1,20 +1,24 @@
-- name: Ensure the .bashrc file exists
-  file:
-    path: "{{ user_home }}/.bashrc"
-    state: touch
-    mode: '0644'
+---
+- block:
+  - name: Ensure the .bashrc file exists
+    file:
+      path: "{{ user_home }}/.bashrc"
+      state: touch
+      mode: '0644'
 
-- name: Add aliases to .bashrc
-  lineinfile:
-    path: "{{ user_home }}/.bashrc"
-    state: present
-    line: "{{ item }}"
-  with_items:
-    - 'alias ll="ls -la"'
-    - 'alias icat="kitty +kitten icat"'
-    - 'alias vim="nvim"'
+  - name: Add aliases to .bashrc
+    lineinfile:
+      path: "{{ user_home }}/.bashrc"
+      state: present
+      line: "{{ item }}"
+    with_items:
+      - 'alias ll="ls -la"'
+      - 'alias icat="kitty +kitten icat"'
+      - 'alias vim="nvim"'
 
-- name: Source .bashrc to apply changes
-  shell: source {{ user_home }}/.bashrc
-  args:
-    executable: /bin/bash
+  - name: Source .bashrc to apply changes
+    shell: source {{ user_home }}/.bashrc
+    args:
+      executable: /bin/bash
+
+  tags: aliases

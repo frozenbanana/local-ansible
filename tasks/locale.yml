@@ -1,22 +1,25 @@
-- name: Check available locales
-  command: locale -a
-  register: locale_output
+---
+- block:
+  - name: Check available locales
+    command: locale -a
+    register: locale_output
 
-- name: Ensure sv_SE.UTF-8 locale is present in /etc/locale.gen
-  lineinfile:
-    path: /etc/locale.gen
-    regexp: '^#? *sv_SE.UTF-8 UTF-8'
-    line: 'sv_SE.UTF-8 UTF-8'
-    state: present
+  - name: Ensure sv_SE.UTF-8 locale is present in /etc/locale.gen
+    lineinfile:
+      path: /etc/locale.gen
+      regexp: '^#? *sv_SE.UTF-8 UTF-8'
+      line: 'sv_SE.UTF-8 UTF-8'
+      state: present
 
-- name: Generate locales
-  command: locale-gen
-  when: "'sv_SE.utf8' not in locale_output.stdout"
+  - name: Generate locales
+    command: locale-gen
+    when: "'sv_SE.utf8' not in locale_output.stdout"
 
-- name: Set Swedish locale as default
-  lineinfile:
-    path: /etc/default/locale
-    regexp: '^LANG='
-    line: 'LANG=sv_SE.UTF-8'
-    state: present
+  - name: Set Swedish locale as default
+    lineinfile:
+      path: /etc/default/locale
+      regexp: '^LANG='
+      line: 'LANG=sv_SE.UTF-8'
+      state: present
 
+  tags: locale

@@ -1,62 +1,68 @@
-- name: Install Packages
-  apt: name={{item}}
-  with_items:
-    - htop
-    - git
-    - ripgrep
-    - unzip
-    - neofetch
-    - wget
-    - apt-transport-https
-    - ca-certificates
-    - curl
-    - software-properties-common
-    - python3-pip
-    - virtualenv
-    - python3-setuptools
-    - wl-clipboard
-    - locales
-    - gpaste-2
-    - flatpak
-    - gnome-software-plugin-flatpak
-    - kitty
-    - ranger
+---
+- block:
+  - name: Install Packages
+    apt: name={{item}}
+    with_items:
+      - htop
+      - git
+      - ripgrep
+      - unzip
+      - neofetch
+      - wget
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - virtualenv
+      - python3-setuptools
+      - wl-clipboard
+      - locales
+      - gpaste-2
+      - flatpak
+      - gnome-software-plugin-flatpak
+      - kitty
+      - ranger
 
-- name: Add flatpak repo
-  command: flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  - name: Install Nix
+    shell: "curl -L https://nixos.org/nix/install | sh -s -- --daemon"
 
-- name: Install Flatpak packages
-  community.general.flatpak:
-    name:
-      - org.gimp.GIMP
-      - com.github.IsmaelMartinez.teams_for_linux
-      - com.visualstudio.code
-      - com.bitwarden.desktop
-      - com.obsproject.Studio
-      - com.spotify.Client
+  - name: Add flatpak repo
+    command: flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
-- name: Ensure /tmp/deb_packages directory exists
-  file:
-    path: /tmp/deb_packages
-    state: directory
+  - name: Install Flatpak packages
+    community.general.flatpak:
+      name:
+        - org.gimp.GIMP
+        - com.github.IsmaelMartinez.teams_for_linux
+        - com.visualstudio.code
+        - com.bitwarden.desktop
+        - com.obsproject.Studio
+        - com.spotify.Client
 
-- name: Download .deb packages
-  get_url:
-    url: "{{ item.url }}"
-    dest: "/tmp/deb_packages/{{ item.name }}"
-  with_items:
-    - { name: 'ChatGPT_1.1.0_linux_x86_64.deb', url: 'https://github.com/lencx/ChatGPT/releases/download/v1.1.0/ChatGPT_1.1.0_linux_x86_64.deb' }
+  - name: Ensure /tmp/deb_packages directory exists
+    file:
+      path: /tmp/deb_packages
+      state: directory
 
-- name: Install .deb packages
-  apt:
-    deb: "/tmp/deb_packages/{{ item.name }}"
-  with_items:
-    - { name: 'ChatGPT_1.1.0_linux_x86_64.deb', url: 'https://github.com/lencx/ChatGPT/releases/download/v1.1.0/ChatGPT_1.1.0_linux_x86_64.deb' }
+  - name: Download .deb packages
+    get_url:
+      url: "{{ item.url }}"
+      dest: "/tmp/deb_packages/{{ item.name }}"
+    with_items:
+      - { name: 'ChatGPT_1.1.0_linux_x86_64.deb', url: 'https://github.com/lencx/ChatGPT/releases/download/v1.1.0/ChatGPT_1.1.0_linux_x86_64.deb' }
 
-- name: Clean up .deb files
-  file:
-    path: "/tmp/deb_packages/{{ item.name }}"
-    state: absent
-  with_items:
-    - { name: 'ChatGPT_1.1.0_linux_x86_64.deb', url: 'https://github.com/lencx/ChatGPT/releases/download/v1.1.0/ChatGPT_1.1.0_linux_x86_64.deb' }
+  - name: Install .deb packages
+    apt:
+      deb: "/tmp/deb_packages/{{ item.name }}"
+    with_items:
+      - { name: 'ChatGPT_1.1.0_linux_x86_64.deb', url: 'https://github.com/lencx/ChatGPT/releases/download/v1.1.0/ChatGPT_1.1.0_linux_x86_64.deb' }
 
+  - name: Clean up .deb files
+    file:
+      path: "/tmp/deb_packages/{{ item.name }}"
+      state: absent
+    with_items:
+      - { name: 'ChatGPT_1.1.0_linux_x86_64.deb', url: 'https://github.com/lencx/ChatGPT/releases/download/v1.1.0/ChatGPT_1.1.0_linux_x86_64.deb' }
+
+  tags: packages 

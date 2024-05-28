@@ -1,63 +1,84 @@
-- name: Add Docker GPG apt Key
-  apt_key:
-    url: https://download.docker.com/linux/debian/gpg
-    state: present
+---
+- block:
+  - name: Add Docker GPG apt Key
+    apt_key:
+      url: https://download.docker.com/linux/debian/gpg
+      state: present
 
-- name: Add Docker Repository
-  apt_repository:
-    repo: deb https://download.docker.com/linux/ubuntu focal stable
-    state: present
+  - name: Add Docker Repository
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu focal stable
+      state: present
 
-- name: Update apt cache and install necessary packages
-  apt:
-    name:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - gnupg
-      - lsb-release
-    state: present
-    update_cache: true
+  - name: Update apt cache and install necessary packages
+    apt:
+      name:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
+      state: present
+      update_cache: true
 
-- name: Install Docker Engine
-  apt:
-    name: docker-ce
-    state: latest
-    update_cache: true
+  - name: Install Docker Engine
+    apt:
+      name: docker-ce
+      state: latest
+      update_cache: true
 
-- name: Install Docker Module for Python
-  pip:
-    name: docker
+  - name: Download Docker Compose binary
+    get_url:
+      url: "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+      dest: /usr/local/bin/docker-compose
+      mode: '0755'
 
-- name: Download Docker Desktop .deb package
-  get_url:
-    url: "https://desktop.docker.com/linux/main/amd64/149282/docker-desktop-4.30.0-amd64.deb"
-    dest: "/tmp/docker-desktop.deb"
+  - name: Apply executable permissions to the Docker Compose binary
+    file:
+      path: /usr/local/bin/docker-compose
+      mode: '0755'
+      owner: root
+      group: root
 
-- name: Install Docker Desktop
-  apt:
-    deb: "/tmp/docker-desktop.deb"
-    state: present
+  - name: Verify Docker Compose installation
+    command: /usr/local/bin/docker-compose --version
+    register: result
 
-- name: Add user to the docker group
-  user:
-    name: henry
-    groups: docker
-    append: yes
+  - name: Display Docker Compose version
+    debug:
+      msg: "Docker Compose version installed: {{ result.stdout }}"
 
-- name: Add ansible to the docker group
-  user:
-    name: ansible
-    groups: docker
-    append: yes
+  - name: Download Docker Desktop .deb package
+    get_url:
+      url: "https://desktop.docker.com/linux/main/amd64/149282/docker-desktop-4.30.0-amd64.deb"
+      dest: "/tmp/docker-desktop.deb"
 
-- name: Enable Docker service
-  systemd:
-    name: docker
-    enabled: yes
-    state: started
+  - name: Install Docker Desktop
+    apt:
+      deb: "/tmp/docker-desktop.deb"
+      state: present
 
-- name: Clean up Docker Desktop .deb package
-  file:
-    path: /tmp/docker-desktop.deb
-    state: absent
+  - name: Add user to the docker group
+    user:
+      name: henry
+      groups: docker
+      append: yes
+
+  - name: Add ansible to the docker group
+    user:
+      name: ansible
+      groups: docker
+      append: yes
+
+  - name: Enable Docker service
+    systemd:
+      name: docker
+      enabled: yes
+      state: started
+
+  - name: Clean up Docker Desktop .deb package
+    file:
+      path: /tmp/docker-desktop.deb
+      state: absent
+
+  tags: docker
